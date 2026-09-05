@@ -13,7 +13,17 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        // Step 1:  Create a double array with a size equal to the length.
+        // Step 2: Use a for loop to go through each index of the array.
+        // Step 3: At each index multiply number by the index plus 1.
+        // Step 4: Store the calculated multiple in the array.
+        // Step 5: Return the completed array.
+        double[] result = new double[length];
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = number * (i + 1);
+        }
+        return result; 
     }
 
     /// <summary>
@@ -29,5 +39,21 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        // Step 1: Find the index where the last amount values begin.
+        // Step 2: Get the last amount values from the list.
+        // Step 3: Get all the values before the last amount values.
+        // Step 4: Remove all the values from the original list.
+        // Step 5: Add the last part to the beginning of the original list.
+        // Step 6: Add the first part after the last part.
+
+        int startIndex = data.Count - amount;
+
+        List<int> lastPart = data.GetRange(startIndex, amount);
+        List<int> firstPart = data.GetRange(0, startIndex);
+
+        data.Clear();
+        data.AddRange(lastPart);
+        data.AddRange(firstPart);
     }
 }
