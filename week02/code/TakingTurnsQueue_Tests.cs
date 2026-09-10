@@ -43,7 +43,11 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Defect(s) Found: PersonQueue.Enqueue() was inserting new people at the front of the list, 
+    // instead of the back. This caused 
+    // FIFO (stack) behaviour instead of LIFO (queue) behaviour. The last added (Sue) was
+    //  being returned first, instead of the first person Bob.
+    
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -85,7 +89,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Same as above — PersonQueue.Enqueue() inserted at the front instead of 
+    // the back, causing LIFO instead of FIFO behavior. This also failed on the first person 
+    // returned (expected Bob, got Sue).
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -116,7 +122,10 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: 1. PersonQueue.Enqueue() inserted at the front instead of the back,
+    // causing LIFO instead of FIFO ordering, this caused the initial sequence of names to be wrong.
+    // 2. GetNextPerson() only re-enqueued a person if Turns > 1, so a person with infinite turns
+    // (Turns = 0) was dropped from the queue after their first turn instead of staying forever.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -143,7 +152,11 @@ public class TakingTurnsQueueTests
     [TestMethod]
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found: // Defect(s) Found: 1. PersonQueue.Enqueue() inserted at the front instead of the back,
+    // causing LIFO instead of FIFO ordering, this caused the initial sequence of names to be wrong.
+    // 2. GetNextPerson() only re-enqueued a person if Turns > 1, so a person with infinite turns
+    // (Turns = -3, or any value <= 0) was dropped from the queue after their first turn instead of
+    // staying forever. This test confirms the bug applies to negative values, not just zero.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
@@ -167,6 +180,7 @@ public class TakingTurnsQueueTests
                  string.Format("Unexpected exception of type {0} caught: {1}",
                                 e.GetType(), e.Message)
             );
+            //Defects: None, this one ran on the first try.
         }
     }
 }
